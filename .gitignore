@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Archivos generados
+dist/
+dist-ssr/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Archivos del editor
+.vscode/
+.idea/
+.DS_Store
