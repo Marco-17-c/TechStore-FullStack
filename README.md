@@ -219,3 +219,9 @@ Las operaciones administrativas requieren un token JWT válido y el rol correspo
 ## 10. Autor
 
 Proyecto académico desarrollado como trabajo integrador de Desarrollo de Aplicaciones Web Full Stack.
+
+## Aplicaciones desplegadas
+
+- **Backend (Render):** https://techstore-backend-34ob.onrender.com
+- **Panel Angular (Vercel):** https://tech-store-full-stack-kohl.vercel.app/
+- **Panel React (Vercel):** https://tech-store-full-stack-fhgo.vercel.app/login
