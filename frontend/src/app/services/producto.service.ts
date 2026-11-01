@@ -19,8 +19,8 @@ export interface Producto {
 })
 export class ProductoService {
 
-  private apiUrl = 'http://localhost:3000/api/productos';
-
+  private apiUrl = 'https://techstore-backend-34ob.onrender.com/api/productos';
+  
   constructor(private http: HttpClient) {}
 
   obtenerProductos(): Observable<Producto[]> {

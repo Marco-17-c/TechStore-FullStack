@@ -21,7 +21,7 @@ export interface RespuestaLogin {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = 'https://techstore-backend-34ob.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 
