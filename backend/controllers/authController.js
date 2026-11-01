@@ -33,11 +33,11 @@ const registrar = async (req, res) => {
         const passwordEncriptada = await bcrypt.hash(password, 12);
 
         const nuevoUsuario = new Usuario({
-            nombre,
-            correo,
-            password: passwordEncriptada,
-            rol: 'usuario'
-        });
+        nombre,
+        correo: correo.toLowerCase().trim(),
+        password: passwordEncriptada,
+        rol: 'usuario'
+        }); 
 
         await nuevoUsuario.save();
 
