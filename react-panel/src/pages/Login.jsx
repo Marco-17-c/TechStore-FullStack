@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
@@ -63,6 +63,11 @@ function Login() {
                 <button type="submit" disabled={cargando}>
                     {cargando ? 'Ingresando...' : 'Ingresar'}
                 </button>
+
+                            <p>
+                        ¿No tienes una cuenta?{' '}
+                    <Link to="/register">Regístrate aquí</Link>
+                </p>
             </form>
         </div>
     );

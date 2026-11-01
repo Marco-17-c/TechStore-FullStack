@@ -4,6 +4,7 @@ import { Navigate, Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Productos from './pages/Productos';
 import CrearProducto from './pages/CrearProducto';
@@ -39,6 +40,7 @@ function App() {
             />
 
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route
                 path="/dashboard"

@@ -22,6 +22,17 @@ export function AuthProvider({ children }) {
             : null;
     });
 
+    // Registrar usuario
+    const register = async (nombre, correo, password) => {
+        const respuesta = await api.post('/auth/register', {
+            nombre,
+            correo,
+            password
+        });
+
+        return respuesta.data;
+    };
+
     // Iniciar sesión
     const login = async (correo, password) => {
         const respuesta = await api.post('/auth/login', {
@@ -58,6 +69,7 @@ export function AuthProvider({ children }) {
                 usuario,
                 autenticado,
                 login,
+                register,
                 logout
             }}
         >
@@ -66,7 +78,6 @@ export function AuthProvider({ children }) {
     );
 }
 
-// Hook para utilizar la autenticación
 export function useAuth() {
     return useContext(AuthContext);
 }

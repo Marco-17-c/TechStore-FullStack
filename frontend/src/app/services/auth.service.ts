@@ -16,6 +16,10 @@ export interface RespuestaLogin {
   usuario: Usuario;
 }
 
+export interface RespuestaRegistro {
+  mensaje: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,6 +45,18 @@ export class AuthService {
           JSON.stringify(respuesta.usuario)
         );
       })
+    );
+  }
+
+  registrarUsuario(
+    nombre: string,
+    correo: string,
+    password: string
+  ): Observable<RespuestaRegistro> {
+
+    return this.http.post<RespuestaRegistro>(
+      `${this.apiUrl}/register`,
+      { nombre, correo, password }
     );
   }
 

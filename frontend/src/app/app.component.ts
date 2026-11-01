@@ -19,67 +19,135 @@ export class AppComponent implements OnInit {
   productoEditado: Producto = this.productoVacio();
 
   usuario: Usuario | null = null;
-autenticado = false;
-esAdmin = false;
+  autenticado = false;
+  esAdmin = false;
 
-correo = '';
-password = '';
-errorLogin = '';
+  // Inicio de sesión
+  correo = '';
+  password = '';
+  errorLogin = '';
 
-constructor(
-  private productoService: ProductoService,
-  private authService: AuthService
-) {
-  this.usuario = this.authService.obtenerUsuario();
-  this.autenticado = this.authService.estaAutenticado();
-  this.esAdmin = this.authService.esAdministrador();
-}
+  // Registro de usuarios
+  modoRegistro = false;
+  nombreRegistro = '';
+  correoRegistro = '';
+  passwordRegistro = '';
+  errorRegistro = '';
+  mensajeRegistro = '';
+  cargandoRegistro = false;
 
-ngOnInit(): void {
-  if (this.autenticado) {
-    this.cargarProductos();
+  constructor(
+    private productoService: ProductoService,
+    private authService: AuthService
+  ) {
+    this.usuario = this.authService.obtenerUsuario();
+    this.autenticado = this.authService.estaAutenticado();
+    this.esAdmin = this.authService.esAdministrador();
   }
-}
 
-// Iniciar sesión
-iniciarSesion(): void {
-  this.errorLogin = '';
-
-  this.authService.iniciarSesion(
-    this.correo,
-    this.password
-  ).subscribe({
-    next: (respuesta) => {
-      this.usuario = respuesta.usuario;
-      this.autenticado = true;
-      this.esAdmin = respuesta.usuario.rol === 'admin';
-
-      this.correo = '';
-      this.password = '';
-
+  ngOnInit(): void {
+    if (this.autenticado) {
       this.cargarProductos();
-    },
-    error: (err) => {
-      this.errorLogin =
-        err.error?.mensaje ||
-        'No se pudo iniciar sesión. Verifica tus credenciales.';
     }
-  });
-}
+  }
 
-// Cerrar sesión
-cerrarSesion(): void {
-  this.authService.cerrarSesion();
+  // Iniciar sesión
+  iniciarSesion(): void {
+    this.errorLogin = '';
 
-  this.usuario = null;
-  this.autenticado = false;
-  this.esAdmin = false;
+    this.authService.iniciarSesion(
+      this.correo,
+      this.password
+    ).subscribe({
+      next: (respuesta) => {
+        this.usuario = respuesta.usuario;
+        this.autenticado = true;
+        this.esAdmin = respuesta.usuario.rol === 'admin';
 
-  this.productos = [];
-  this.mensaje = '';
-  this.error = '';
-  this.errorLogin = '';
-}
+        this.correo = '';
+        this.password = '';
+
+        this.cargarProductos();
+      },
+      error: (err) => {
+        this.errorLogin =
+          err.error?.mensaje ||
+          'No se pudo iniciar sesión. Verifica tus credenciales.';
+      }
+    });
+  }
+
+  // Registrar usuario
+  registrarUsuario(): void {
+    this.errorRegistro = '';
+    this.mensajeRegistro = '';
+
+    if (this.passwordRegistro.length < 8) {
+      this.errorRegistro =
+        'La contraseña debe tener al menos 8 caracteres.';
+      return;
+    }
+
+    this.cargandoRegistro = true;
+
+    this.authService.registrarUsuario(
+      this.nombreRegistro,
+      this.correoRegistro,
+      this.passwordRegistro
+    ).subscribe({
+      next: (respuesta) => {
+        this.mensajeRegistro =
+          respuesta.mensaje || 'Usuario registrado correctamente.';
+
+        this.correo = this.correoRegistro;
+        this.password = '';
+
+        this.nombreRegistro = '';
+        this.correoRegistro = '';
+        this.passwordRegistro = '';
+
+        this.modoRegistro = false;
+        this.cargandoRegistro = false;
+      },
+      error: (err) => {
+        this.errorRegistro =
+          err.error?.mensaje ||
+          'No se pudo registrar el usuario.';
+
+        this.cargandoRegistro = false;
+      }
+    });
+  }
+
+  // Mostrar formulario de registro
+  mostrarRegistro(): void {
+    this.modoRegistro = true;
+    this.errorRegistro = '';
+    this.mensajeRegistro = '';
+    this.errorLogin = '';
+  }
+
+  // Volver al inicio de sesión
+  mostrarLogin(): void {
+    this.modoRegistro = false;
+    this.errorRegistro = '';
+    this.mensajeRegistro = '';
+    this.errorLogin = '';
+  }
+
+  // Cerrar sesión
+  cerrarSesion(): void {
+    this.authService.cerrarSesion();
+
+    this.usuario = null;
+    this.autenticado = false;
+    this.esAdmin = false;
+
+    this.productos = [];
+    this.mensaje = '';
+    this.error = '';
+    this.errorLogin = '';
+  }
 
   productoVacio(): Producto {
     return {
@@ -124,73 +192,72 @@ cerrarSesion(): void {
       }
     });
   }
-  
-editarProducto(producto: Producto): void {
-  if (!producto._id) {
-    return;
-  }
 
-  this.productoEditandoId = producto._id;
-  this.productoEditado = { ...producto };
-  this.mensaje = '';
-  this.error = '';
-}
-
-cancelarEdicion(): void {
-  this.productoEditandoId = null;
-  this.productoEditado = this.productoVacio();
-}
-
-guardarEdicion(): void {
-  if (!this.productoEditandoId) {
-    return;
-  }
-
-  this.error = '';
-  this.mensaje = '';
-
-  this.productoService.actualizarProducto(
-    this.productoEditandoId,
-    this.productoEditado
-  ).subscribe({
-    next: () => {
-      this.mensaje = 'Producto actualizado correctamente.';
-      this.cancelarEdicion();
-      this.cargarProductos();
-    },
-    error: (err) => {
-      console.error(err);
-      this.error = err.error?.error || 'No se pudo actualizar el producto.';
+  editarProducto(producto: Producto): void {
+    if (!producto._id) {
+      return;
     }
-  });
-}
 
-eliminarProducto(producto: Producto): void {
-  if (!producto._id) {
-    return;
+    this.productoEditandoId = producto._id;
+    this.productoEditado = { ...producto };
+    this.mensaje = '';
+    this.error = '';
   }
 
-  const confirmar = window.confirm(
-    `¿Estás seguro de eliminar "${producto.nombre}"?`
-  );
-
-  if (!confirmar) {
-    return;
+  cancelarEdicion(): void {
+    this.productoEditandoId = null;
+    this.productoEditado = this.productoVacio();
   }
 
-  this.error = '';
-  this.mensaje = '';
-
-  this.productoService.eliminarProducto(producto._id).subscribe({
-    next: () => {
-      this.mensaje = 'Producto eliminado correctamente.';
-      this.cargarProductos();
-    },
-    error: (err) => {
-      console.error(err);
-      this.error = 'No se pudo eliminar el producto.';
+  guardarEdicion(): void {
+    if (!this.productoEditandoId) {
+      return;
     }
-  });
-}
 
+    this.error = '';
+    this.mensaje = '';
+
+    this.productoService.actualizarProducto(
+      this.productoEditandoId,
+      this.productoEditado
+    ).subscribe({
+      next: () => {
+        this.mensaje = 'Producto actualizado correctamente.';
+        this.cancelarEdicion();
+        this.cargarProductos();
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = err.error?.error || 'No se pudo actualizar el producto.';
+      }
+    });
+  }
+
+  eliminarProducto(producto: Producto): void {
+    if (!producto._id) {
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `¿Estás seguro de eliminar "${producto.nombre}"?`
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.error = '';
+    this.mensaje = '';
+
+    this.productoService.eliminarProducto(producto._id).subscribe({
+      next: () => {
+        this.mensaje = 'Producto eliminado correctamente.';
+        this.cargarProductos();
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'No se pudo eliminar el producto.';
+      }
+    });
+  }
 }
